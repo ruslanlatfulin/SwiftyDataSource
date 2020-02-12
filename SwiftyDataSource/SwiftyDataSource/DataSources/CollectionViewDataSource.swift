@@ -104,15 +104,11 @@ open class CollectionViewDataSource<ObjectType>: NSObject, DataSource, UICollect
     }
     open func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
         guard let object = object(at: indexPath) else { return }
-        self.delegate?.dataSource(self, didSelect: object, at: indexPath)
+        self.delegate?.dataSource(self, didDeselect: object, at: indexPath)
     }
 }
 
 extension CollectionViewDataSource: DataSourceContainerDelegate {
-    public func containerWillChangeContent(_ container: DataSourceContainerProtocol) {
-        collectionView?.performBatchUpdates(nil, completion: nil)
-    }
-    
     public func container(_ container: DataSourceContainerProtocol, didChange anObject: Any, at indexPath: IndexPath?, for type: DataSourceObjectChangeType, newIndexPath: IndexPath?) {
         switch type {
         case .insert:
