@@ -296,7 +296,8 @@ open class TableViewDataSource<ObjectType>: NSObject, DataSource, UITableViewDat
     
     // Scroll view methods
     open func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if scrollView.contentOffset.y >= scrollView.contentSize.height {
+        guard let tableViewHeight = tableView?.frame.size.height else { return }
+        if scrollView.contentOffset.y + (1.5 * tableViewHeight) >= scrollView.contentSize.height {
             delegate?.dataSourceDidScrollToLastElement(self)
         }
     }
