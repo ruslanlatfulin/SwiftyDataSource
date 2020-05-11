@@ -293,6 +293,14 @@ open class TableViewDataSource<ObjectType>: NSObject, DataSource, UITableViewDat
     open func tableView(_ tableView: UITableView, shouldSpringLoadRowAt indexPath: IndexPath, with context: UISpringLoadedInteractionContext) -> Bool {
         return true
     }
+    
+    // Scroll view methods
+    open func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        guard let tableViewHeight = tableView?.frame.size.height else { return }
+        if scrollView.contentOffset.y + (1.5 * tableViewHeight) >= scrollView.contentSize.height {
+            delegate?.dataSourceDidScrollToLastElement(self)
+        }
+    }
 }
 
 extension TableViewDataSource: DataSourceContainerDelegate {
@@ -317,7 +325,7 @@ extension TableViewDataSource: DataSourceContainerDelegate {
                 tableView?.insertRows(at: [newIndexPath], with: UITableView.RowAnimation.none)
             }
             if let indexPath = indexPath {
-                tableView?.reloadRows(at: [indexPath], with: .automatic)
+                tableView?.reloadRows(at: [indexPath], with: .fade)
             }
         case .update:
             if let indexPath = indexPath, let cell = tableView?.cellForRow(at: indexPath) as? DataSourceConfigurable, let object = object(at: indexPath) {
@@ -335,11 +343,11 @@ extension TableViewDataSource: DataSourceContainerDelegate {
     public func container(_ container: DataSourceContainerProtocol, didChange sectionInfo: DataSourceSectionInfo, atSectionIndex sectionIndex: Int, for type: DataSourceObjectChangeType) {
         switch (type) {
         case .insert:
-            tableView?.insertSections(IndexSet(integer: sectionIndex), with: .automatic)
+            tableView?.insertSections(IndexSet(integer: sectionIndex), with: .fade)
         case .delete:
-            tableView?.deleteSections(IndexSet(integer: sectionIndex), with: .automatic)
+            tableView?.deleteSections(IndexSet(integer: sectionIndex), with: .fade)
         case .update:
-            tableView?.reloadSections(IndexSet(integer: sectionIndex), with: .automatic)
+            tableView?.reloadSections(IndexSet(integer: sectionIndex), with: .fade)
         default:
             tableView?.reloadData()
         }
