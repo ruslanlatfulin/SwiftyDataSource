@@ -9,10 +9,15 @@
 import UIKit
 
 public extension UIView {
-    
     // Should be called after views layout
+    
     func round(corners: UIRectCorner, byRadius value: CGFloat) {
-        round(corners: corners, byRadii: CGSize(width: value, height: value))
+        if #available(iOS 11, *) {
+            layer.cornerRadius = value
+            layer.maskedCorners = CACornerMask(rawValue: corners.rawValue)
+        } else {
+            round(corners: corners, byRadii: CGSize(width: value, height: value))
+        }
     }
 
     func round(corners: UIRectCorner, byRadii value: CGSize) {
