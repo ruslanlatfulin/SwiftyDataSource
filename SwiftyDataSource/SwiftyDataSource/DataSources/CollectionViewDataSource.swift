@@ -15,10 +15,12 @@ open class CollectionViewDataSource<ObjectType>: NSObject, DataSource, UICollect
     public init(collectionView: UICollectionView? = nil,
                 container: DataSourceContainer<ObjectType>? = nil,
                 delegate: AnyCollectionViewDataSourceDelegate<ObjectType>? = nil,
-                cellIdentifier: String? = nil) {
+                cellIdentifier: String? = nil,
+                headerIdentifier: String? = nil) {
         self.collectionView = collectionView
         self.delegate = delegate
         self.cellIdentifier = cellIdentifier
+        self.headerIdentifier = headerIdentifier
         self.container = container
         super.init()
         self.collectionView?.dataSource = self
@@ -42,6 +44,12 @@ open class CollectionViewDataSource<ObjectType>: NSObject, DataSource, UICollect
     }
     
     public var cellIdentifier: String? {
+        didSet {
+            self.collectionView?.reloadData()
+        }
+    }
+    
+    public var headerIdentifier: String? {
         didSet {
             self.collectionView?.reloadData()
         }
@@ -105,6 +113,21 @@ open class CollectionViewDataSource<ObjectType>: NSObject, DataSource, UICollect
     open func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
         guard let object = object(at: indexPath) else { return }
         self.delegate?.dataSource(self, didDeselect: object, at: indexPath)
+    }
+    
+    // MARK: Header
+    
+    open func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        guard let identifier = headerIdentifier, let sectionInfo = sectionInfo(at: indexPath.section) else {
+            return UICollectionReusableView()
+        }
+        let view = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: identifier, for: indexPath)
+        
+        guard let configurableView = view as? DataSourceConfigurable else {
+            fatalError("\(identifier) is not implementing DataSourceConfigurable protocol")
+        }
+        configurableView.configure(with: sectionInfo)
+        return view
     }
 }
 

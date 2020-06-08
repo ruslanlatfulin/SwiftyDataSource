@@ -31,6 +31,14 @@ public extension UICollectionView {
     func registerCellNibForDefaultIdentifier<T>(_ cellClass: T.Type) where T: UICollectionViewCell {
         register(UINib(nibName: T.defaultReuseIdentifier, bundle: nil), forCellWithReuseIdentifier: T.defaultReuseIdentifier)
     }
+    
+    func registerHeaderClassForDefaultIdentifier<T>(_ viewClass: T.Type) where T: UICollectionReusableView {
+        register(viewClass, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: T.defaultReuseIdentifier)
+    }
+    
+    func registerHeaderNibForDefaultIdentifier<T>(_ viewClass: T.Type) where T: UICollectionReusableView {
+        register(UINib.init(nibName: T.defaultReuseIdentifier, bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: T.defaultReuseIdentifier)
+    }
 }
 
 public extension UITableView {
@@ -45,7 +53,6 @@ public extension UITableView {
     func registerHeaderFooterNibForDefaultIdentifier<T>(_ viewClass: T.Type) where T: UITableViewHeaderFooterView {
         register(UINib.init(nibName: T.defaultReuseIdentifier, bundle: nil), forHeaderFooterViewReuseIdentifier: T.defaultReuseIdentifier)
     }
-
 
     func registerCellNibForDefaultIdentifier<T>(_ cellClass: T.Type) where T: UITableViewCell {
         register(UINib(nibName: T.defaultReuseIdentifier, bundle: nil), forCellReuseIdentifier: T.defaultReuseIdentifier)
