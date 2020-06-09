@@ -157,6 +157,17 @@ public class ArrayDataSourceContainer<ResultType>: DataSourceContainer<ResultTyp
         delegate?.containerDidChangeContent(self)
     }
     
+    public func removeSection(at sectionIndex: Int) throws {
+        guard sectionIndex < arraySections.count else {
+            throw ArrayDataSourceContainerError.NonValidIndexPathInsertion
+        }
+        let backUpArraySections = arraySections
+        arraySections.remove(at: sectionIndex)
+        delegate?.containerWillChangeContent(self)
+        delegate?.container(self, didChange: backUpArraySections[sectionIndex], atSectionIndex: sectionIndex, for: .delete)
+        delegate?.containerDidChangeContent(self)
+    }
+    
     // MARK: Storage implementing
     
     var arraySections = [Section<ResultType>]()
