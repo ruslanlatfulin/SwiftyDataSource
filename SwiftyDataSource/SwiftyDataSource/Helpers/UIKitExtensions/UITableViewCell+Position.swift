@@ -8,23 +8,21 @@
 
 import UIKit
 
-public extension UITableViewCell {
-    enum Position {
-        case first
-        case middle
-        case last
-        case onlyOne
-    }
+public enum UITableViewCellPosition {
+    case first
+    case middle
+    case last
+    case onlyOne
 }
 
 public extension TableViewDataSource {
 
-    func position(of indexPath: IndexPath) -> UITableViewCell.Position? {
+    func position(of indexPath: IndexPath) -> UITableViewCellPosition? {
         guard let rowsCount = numberOfItems(in: indexPath.section) else {
             return nil
         }
         
-        var position: UITableViewCell.Position
+        var position: UITableViewCellPosition
         if rowsCount == 1 {
             position = .onlyOne
         } else if indexPath.row == 0 {

@@ -58,12 +58,13 @@ open class SelectablesListViewController<T>: UITableViewController, UISearchResu
     
     open override func viewDidLoad() {
         super.viewDidLoad()
-        tableView.allowsMultipleSelection = multiselection
+        // Multiple selection allows to deselect single choise
+        // In this controller single selection is processed on didSelectAction
+        tableView.allowsMultipleSelection = true
         registerCell()
 
-        if multiselection {
-            self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(done(_:)))
-        }
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(done(_:)))
+        
         if container is FilterableDataSourceContainer {
             definesPresentationContext = true
             navigationItem.searchController = searchController
@@ -146,15 +147,19 @@ open class SelectablesListViewController<T>: UITableViewController, UISearchResu
 
 extension SelectablesListViewController: TableViewDataSourceDelegate {
     public func dataSource(_ dataSource: DataSourceProtocol, didSelect object: T, at indexPath: IndexPath) {
-        let index = selectedEntries.firstIndex(where: { $0.selectableEntityIsEqual(to: object)})
-        if index == nil {
-            didSelectAction?(object)
-            selectedEntries.append(object)
-        }
+        didSelectAction?(object)
+        selectedEntries.append(object)
+        delegate?.listDidSelect(self, object)
 
-        // No need to call delegate didSelect: if multiselection is enabled
-        if isObjectSelected(object) {
-            delegate?.listDidSelect(self, object)
+        if multiselection == false {
+            selectedEntries = [object]
+            if let indexPathsForSelectedRows = tableView.indexPathsForSelectedRows {
+                for indexPathForSelectedRow in indexPathsForSelectedRows {
+                    if indexPathForSelectedRow != indexPath {
+                        tableView.deselectRow(at: indexPathForSelectedRow, animated: true)
+                    }
+                }
+            }
         }
     }
     
