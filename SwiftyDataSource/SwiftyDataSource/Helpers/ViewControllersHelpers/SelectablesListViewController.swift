@@ -8,7 +8,7 @@
 
 import UIKit
 
-open class SelectablesListViewController<T>: UITableViewController, UISearchResultsUpdating, UISearchBarDelegate where T: SelectableEntity {
+open class SelectablesListViewController<T>: UITableViewController, UISearchResultsUpdating, UISearchBarDelegate, TableViewDataSourceDelegate where T: SelectableEntity {
 
     // MARK: Public
     
@@ -40,6 +40,14 @@ open class SelectablesListViewController<T>: UITableViewController, UISearchResu
 
     open func cellIdentifier() -> String {
         return SelectablesListCell.defaultReuseIdentifier
+    }
+    
+    open func headerIdentifier() -> String? {
+        return nil
+    }
+
+    open func headerHeight() -> CGFloat {
+        return headerIdentifier() == nil ? 0.0 : 66.0
     }
     
     open func registerCell() {
@@ -81,9 +89,11 @@ open class SelectablesListViewController<T>: UITableViewController, UISearchResu
     
     // MARK: DataSource
     
-    lazy var dataSource: TableViewDataSource<T> = {
+    public lazy var dataSource: TableViewDataSource<T> = {
         let dataSource = TableViewDataSource<T>(container: container, delegate: AnyTableViewDataSourceDelegate(self))
         dataSource.cellIdentifier = cellIdentifier()
+        dataSource.headerIdentifier = headerIdentifier()
+        dataSource.headerHeight = headerHeight()
         return dataSource
     }()
     
@@ -92,7 +102,7 @@ open class SelectablesListViewController<T>: UITableViewController, UISearchResu
 
     private var multiselection: Bool = false
     private var cellUsesCustomSelection: Bool = false
-    private var selectedEntries: [T] = []
+    public private(set) var selectedEntries: [T] = []
     private var allowTextSearch: Bool {
         return container is FilterableDataSourceContainer<T>
     }
@@ -143,10 +153,8 @@ open class SelectablesListViewController<T>: UITableViewController, UISearchResu
     public func searchBarResultsListButtonClicked(_ searchBar: UISearchBar) {
         searchController?.searchBar.endEditing(true)
     }
-}
 
-extension SelectablesListViewController: TableViewDataSourceDelegate {
-    public func dataSource(_ dataSource: DataSourceProtocol, didSelect object: T, at indexPath: IndexPath) {
+    open func dataSource(_ dataSource: DataSourceProtocol, didSelect object: T, at indexPath: IndexPath) {
         didSelectAction?(object)
         selectedEntries.append(object)
         delegate?.listDidSelect(self, object)
@@ -163,14 +171,14 @@ extension SelectablesListViewController: TableViewDataSourceDelegate {
         }
     }
     
-    public func dataSource(_ dataSource: DataSourceProtocol, didDeselect object: T, at indexPath: IndexPath?) {
+    open func dataSource(_ dataSource: DataSourceProtocol, didDeselect object: T, at indexPath: IndexPath?) {
         if let index = selectedEntries.firstIndex(where: { $0.selectableEntityIsEqual(to: object)}) {
             selectedEntries.remove(at: index)
             delegate?.listDidDeselect(self, object)
         }
     }
     
-    private func isObjectSelected(_ object: T) -> Bool {
+    public func isObjectSelected(_ object: T) -> Bool {
         return selectedEntries.contains(where: { $0.selectableEntityIsEqual(to: object) })
     }
 }
