@@ -123,16 +123,13 @@ open class SelectablesListViewController<T>: UITableViewController, UISearchResu
 
     fileprivate func selectRowsForSelectedEntries() {
         selectedEntries.forEach { entry in
-            for section in 0..<tableView.numberOfSections {
-                for row in 0..<tableView.numberOfRows(inSection: section) {
-                    let indexPath = IndexPath(row: row, section: section)
-                    let entity = (tableView.cellForRow(at: indexPath) as? SelectablesListCell)?.entity
-                    let selected = entity?.selectableEntityIsEqual(to: entry) == true
-                    if selected {
-                        tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)
-                    }
+            container?.search({ (indexPath, entity) -> Bool in
+                let selected = entity.selectableEntityIsEqual(to: entry) == true
+                if selected {
+                    tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)
                 }
-            }
+                return selected
+            })
         }
     }
 
