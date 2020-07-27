@@ -144,19 +144,22 @@ open class TableViewDataSource<ObjectType>: NSObject, DataSource, UITableViewDat
     open func setView(_ viewToAdd: UIView?, hidden: Bool) {
         guard let tableView = tableView, let viewToAdd = viewToAdd else { return }
         
-        if viewToAdd.superview != nil && viewToAdd.superview != tableView.backgroundView && viewToAdd != tableView.backgroundView {
+        // Library allows to handle NoDataView and Refreshing view in two ways
+        // 1. Add viewToAdd in client code to any view and library makes its hidden and visibly automatically
+        if viewToAdd.superview != nil && viewToAdd.superview != tableView.backgroundView {
             viewToAdd.isHidden = hidden
             viewToAdd.superview?.bringSubviewToFront(viewToAdd)
-        } else if viewToAdd.superview == nil && hidden == false {
+            return
+        }
+        
+        // 2. If viewToAdd is not added to another view it will be added to background view of table view
+        // Somewhy we need to create background view to add it. If set view as background view it will be twitched on refresh animation
+        if viewToAdd.superview == nil && hidden == false {
             viewToAdd.translatesAutoresizingMaskIntoConstraints = false
-            if tableView.backgroundView != nil {
-                tableView.backgroundView?.addSubview(viewToAdd)
-            } else {
-                tableView.backgroundView = viewToAdd
-            }
+            tableView.backgroundView = UIView(frame: tableView.bounds)
+            tableView.backgroundView?.addSubview(viewToAdd)
+            
             if let superview = viewToAdd.superview {
-                viewToAdd.centerXAnchor.constraint(equalTo: superview.centerXAnchor).isActive = true
-                viewToAdd.centerYAnchor.constraint(equalTo: superview.centerYAnchor).isActive = true
                 viewToAdd.leftAnchor.constraint(equalTo: superview.leftAnchor).isActive = true
                 viewToAdd.rightAnchor.constraint(equalTo: superview.rightAnchor).isActive = true
                 viewToAdd.topAnchor.constraint(equalTo: superview.topAnchor).isActive = true
