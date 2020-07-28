@@ -13,7 +13,7 @@ public protocol IdentifiableProtocol {
 }
 
 extension DataSourceContainer where ResultType: IdentifiableProtocol {
-    func indexPath(for object: IdentifiableProtocol) -> IndexPath?  {
+    public func indexPath(forIdentifiable object: IdentifiableProtocol) -> IndexPath?  {
         return search { (indexPath, objectInContainer) -> Bool in
             return object.id == objectInContainer.id
         }
