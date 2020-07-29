@@ -61,6 +61,18 @@ open class SelectablesListViewController<T>: UITableViewController, UISearchResu
         didSelectMultiAction?(selectedEntries)
         delegate?.listDidSelect(self, entities: selectedEntries)
     }
+
+    @objc private func selectAllEntries(_ sender: AnyObject) {
+        container?.enumerate({ (indexPath, entity) in
+            select(object: entity, at: indexPath)
+        })
+    }
+
+    @objc private func deselectAllEntries(_ sender: AnyObject) {
+        container?.enumerate({ (indexPath, entity) in
+            deselect(object: entity, at: indexPath)
+        })
+    }
     
     // MARK: View life cycle
     
@@ -71,7 +83,9 @@ open class SelectablesListViewController<T>: UITableViewController, UISearchResu
         tableView.allowsMultipleSelection = true
         registerCell()
 
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(done(_:)))
+//        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(done(_:)))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("CHOOSE_ALL", comment: ""), style: .plain, target: self, action: #selector(selectAllEntries(_:)))
+
         
         if container is FilterableDataSourceContainer {
             definesPresentationContext = true
@@ -85,6 +99,24 @@ open class SelectablesListViewController<T>: UITableViewController, UISearchResu
     open override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         selectRowsForSelectedEntries()
+    }
+    
+    open var applyButton: UIButton = {
+        let applyButton = UIButton(frame: CGRect.zero)
+        applyButton.setTitle(NSLocalizedString("DONE", comment: ""), for: .normal)
+        applyButton.addTarget(self, action: #selector(done(_:)), for: .touchUpInside)
+        return applyButton
+    }()
+    
+    open override func willMove(toParent parent: UIViewController?) {
+        if parent != nil, let parentView = parent?.view {
+            parentView.addSubview(applyButton)
+            applyButton.leadingAnchor.constraint(equalTo: parentView.leadingAnchor, constant: 16.0).isActive = true
+            applyButton.trailingAnchor.constraint(equalTo: parentView.trailingAnchor, constant: -16.0).isActive = true
+            applyButton.bottomAnchor.constraint(equalTo: parentView.bottomAnchor, constant: -16.0).isActive = true
+        } else {
+            applyButton.removeFromSuperview()
+        }
     }
     
     // MARK: DataSource
@@ -102,12 +134,12 @@ open class SelectablesListViewController<T>: UITableViewController, UISearchResu
 
     private var multiselection: Bool = false
     private var cellUsesCustomSelection: Bool = false
-    public private(set) var selectedEntries: [T] = []
+    private var selectedEntries: [T] = []
     private var allowTextSearch: Bool {
         return container is FilterableDataSourceContainer<T>
     }
     
-    public lazy var searchController: UISearchController? = {
+    public private(set) lazy var searchController: UISearchController? = {
         let searchController = UISearchController(searchResultsController: nil)
         searchController.hidesNavigationBarDuringPresentation = false
         searchController.searchResultsUpdater = self
@@ -120,19 +152,6 @@ open class SelectablesListViewController<T>: UITableViewController, UISearchResu
         return searchController
     }()
 
-
-    fileprivate func selectRowsForSelectedEntries() {
-        selectedEntries.forEach { entry in
-            container?.search({ (indexPath, entity) -> Bool in
-                let selected = entity.selectableEntityIsEqual(to: entry) == true
-                if selected {
-                    tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)
-                }
-                return selected
-            })
-        }
-    }
-
     // MARK: UISearchResultsUpdating
     
     open func updateSearchResults(for searchController: UISearchController) {
@@ -141,20 +160,35 @@ open class SelectablesListViewController<T>: UITableViewController, UISearchResu
         selectRowsForSelectedEntries()
     }
 
+    fileprivate func selectRowsForSelectedEntries() {
+        selectedEntries.forEach { entry in
+            let indexPath = container?.search({ (indexPath, entity) -> Bool in
+                return entity.selectableEntityIsEqual(to: entry)
+            })
+            if let indexPath = indexPath {
+                tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)
+            }
+        }
+    }
+    
     // MARK: UISearchBarDelegate
 
     open func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         searchController?.searchBar.endEditing(true)
     }
     
-    public func searchBarResultsListButtonClicked(_ searchBar: UISearchBar) {
+    open func searchBarResultsListButtonClicked(_ searchBar: UISearchBar) {
         searchController?.searchBar.endEditing(true)
     }
 
+    // MARK: DataSource delegate
+    
     open func dataSource(_ dataSource: DataSourceProtocol, didSelect object: T, at indexPath: IndexPath) {
-        didSelectAction?(object)
-        selectedEntries.append(object)
-        delegate?.listDidSelect(self, object)
+        if !isObjectSelected(object) {
+            didSelectAction?(object)
+            selectedEntries.append(object)
+            delegate?.listDidSelect(self, object)
+        }
 
         if multiselection == false {
             selectedEntries = [object]
@@ -178,7 +212,22 @@ open class SelectablesListViewController<T>: UITableViewController, UISearchResu
     public func isObjectSelected(_ object: T) -> Bool {
         return selectedEntries.contains(where: { $0.selectableEntityIsEqual(to: object) })
     }
+    
+    // MARK: Public methods for manual selecting
+    
+    public func select(object: T, at indexPath: IndexPath) {
+        tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)
+        dataSource(dataSource, didSelect: object, at: indexPath)
+    }
+
+    public func deselect(object: T, at indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        dataSource(dataSource, didDeselect: object, at: indexPath)
+    }
+
 }
+
+// MARK: SelectablesListCell
 
 open class SelectablesListCell: UITableViewCell, DataSourceConfigurable {
     

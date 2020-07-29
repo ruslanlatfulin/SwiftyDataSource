@@ -62,6 +62,18 @@ public class FRCDataSourceContainer<ResultType: NSFetchRequestResult>: DataSourc
         return nil
     }
 
+    open override func enumerate(_ block: (IndexPath, ResultType) -> Void) {
+        guard let sections = sections else { return }
+        for (sectionIndex, section) in sections.enumerated() {
+            if let sectionObjects = section.objects as? [ResultType] {
+                for (rowIndex, object) in sectionObjects.enumerated() {
+                    let indexPath = IndexPath(row: rowIndex, section: sectionIndex)
+                    block(indexPath, object)
+                }
+            }
+        }
+    }
+    
     open override func indexPath(for object: ResultType) -> IndexPath? {
         return fetchedResultController.indexPath(forObject: object)
     }

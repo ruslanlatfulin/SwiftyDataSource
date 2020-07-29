@@ -51,7 +51,7 @@ public class ArrayDataSourceContainer<ResultType>: DataSourceContainer<ResultTyp
         return nil
     }
 
-    open func enumerate(_ block:(IndexPath, ResultType) -> Void) {
+    open override func enumerate(_ block:(IndexPath, ResultType) -> Void) {
         for (sectionIndex, section) in arraySections.enumerated() {
             for (rowIndex, object) in section.arrayObjects.enumerated() {
                 block(IndexPath(row: rowIndex, section: sectionIndex), object)

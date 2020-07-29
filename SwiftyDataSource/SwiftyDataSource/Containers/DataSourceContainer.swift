@@ -95,6 +95,9 @@ public class DataSourceContainer<ResultType>: DataSourceContainerProtocol {
         fatalError("Should be overriden in subclasses")
     }
 
+    open func enumerate(_ block:(IndexPath, ResultType) -> Void) {
+        fatalError("Should be overriden in subclasses")
+    }
 }
 
 // MARK: DataSourceContainerDelegate
