@@ -86,6 +86,7 @@ open class SelectablesListViewController<T>: UITableViewController, UISearchResu
 //        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(done(_:)))
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("CHOOSE_ALL", comment: ""), style: .plain, target: self, action: #selector(selectAllEntries(_:)))
 
+        applyButton = initApplyButton()
         
         if container is FilterableDataSourceContainer {
             definesPresentationContext = true
@@ -101,16 +102,21 @@ open class SelectablesListViewController<T>: UITableViewController, UISearchResu
         selectRowsForSelectedEntries()
     }
     
-    open var applyButton: UIButton = {
-        let applyButton = UIButton(frame: CGRect.zero)
+    open func initApplyButton() -> UIButton {
+        let applyButton = UIButton(type: .custom)
+        applyButton.translatesAutoresizingMaskIntoConstraints = false
         applyButton.setTitle(NSLocalizedString("DONE", comment: ""), for: .normal)
-        applyButton.addTarget(self, action: #selector(done(_:)), for: .touchUpInside)
+        applyButton.heightAnchor.constraint(equalToConstant: 44).isActive = true
         return applyButton
-    }()
+    }
+    
+    private var applyButton: UIButton!
     
     open override func willMove(toParent parent: UIViewController?) {
         if parent != nil, let parentView = parent?.view {
             parentView.addSubview(applyButton)
+            applyButton.addTarget(self, action: #selector(done(_:)), for: .touchUpInside)
+            applyButton.translatesAutoresizingMaskIntoConstraints = false
             applyButton.leadingAnchor.constraint(equalTo: parentView.leadingAnchor, constant: 16.0).isActive = true
             applyButton.trailingAnchor.constraint(equalTo: parentView.trailingAnchor, constant: -16.0).isActive = true
             applyButton.bottomAnchor.constraint(equalTo: parentView.bottomAnchor, constant: -16.0).isActive = true
