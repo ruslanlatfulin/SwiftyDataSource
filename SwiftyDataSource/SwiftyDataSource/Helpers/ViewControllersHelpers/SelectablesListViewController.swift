@@ -86,8 +86,6 @@ open class SelectablesListViewController<T>: UITableViewController, UISearchResu
 //        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(done(_:)))
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("CHOOSE_ALL", comment: ""), style: .plain, target: self, action: #selector(selectAllEntries(_:)))
 
-        applyButton = initApplyButton()
-        
         if container is FilterableDataSourceContainer {
             definesPresentationContext = true
             navigationItem.searchController = searchController
@@ -110,17 +108,20 @@ open class SelectablesListViewController<T>: UITableViewController, UISearchResu
         return applyButton
     }
     
-    private var applyButton: UIButton!
+    private var applyButton: UIButton?
     
     open override func willMove(toParent parent: UIViewController?) {
-        if parent != nil, let parentView = parent?.view {
+        if applyButton == nil {
+            applyButton = initApplyButton()
+        }
+        if parent != nil, let parentView = parent?.view, let applyButton = applyButton {
             parentView.addSubview(applyButton)
             applyButton.addTarget(self, action: #selector(done(_:)), for: .touchUpInside)
             applyButton.translatesAutoresizingMaskIntoConstraints = false
             applyButton.leadingAnchor.constraint(equalTo: parentView.leadingAnchor, constant: 16.0).isActive = true
             applyButton.trailingAnchor.constraint(equalTo: parentView.trailingAnchor, constant: -16.0).isActive = true
             applyButton.bottomAnchor.constraint(equalTo: parentView.bottomAnchor, constant: -16.0).isActive = true
-        } else {
+        } else if let applyButton = applyButton {
             applyButton.removeFromSuperview()
         }
     }
