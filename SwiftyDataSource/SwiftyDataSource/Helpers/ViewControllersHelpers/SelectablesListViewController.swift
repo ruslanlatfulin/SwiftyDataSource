@@ -8,7 +8,7 @@
 
 import UIKit
 
-open class SelectablesListViewController<T>: UITableViewController, UISearchResultsUpdating, UISearchBarDelegate, TableViewDataSourceDelegate where T: SelectableEntity {
+open class SelectablesListViewController<T>: UIViewController, UISearchResultsUpdating, UISearchBarDelegate, TableViewDataSourceDelegate where T: SelectableEntity {
 
     // MARK: Public
     
@@ -16,7 +16,7 @@ open class SelectablesListViewController<T>: UITableViewController, UISearchResu
                 selected: [T]? = nil,
                 multiselection: Bool = false,
                 cellUsesCustomSelection: Bool = false) {
-        super.init(style: .plain)
+        super.init(nibName: nil, bundle: nil)
         self.container = container
         self.dataSource.container = container
         self.selectedEntries = selected ?? []
@@ -50,11 +50,10 @@ open class SelectablesListViewController<T>: UITableViewController, UISearchResu
         return headerIdentifier() == nil ? 0.0 : 66.0
     }
     
-    open func registerCell() {
+    open func registerCell(in tableView: UITableView) {
         tableView.registerCellClassForDefaultIdentifier(SelectablesListCell.self)
     }
     
-
     // MARK: Actions
     
     @objc private func done(_ sender: AnyObject) {
@@ -67,7 +66,7 @@ open class SelectablesListViewController<T>: UITableViewController, UISearchResu
             select(object: entity, at: indexPath)
         })
     }
-
+    
     @objc private func deselectAllEntries(_ sender: AnyObject) {
         container?.enumerate({ (indexPath, entity) in
             deselect(object: entity, at: indexPath)
@@ -76,15 +75,45 @@ open class SelectablesListViewController<T>: UITableViewController, UISearchResu
     
     // MARK: View life cycle
     
+    public private(set) lazy var tableView: UITableView = {
+        let tableView = UITableView(frame: self.view.bounds)
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+
+        // In this controller single selection is processed on didSelectAction,
+        // as multiple selection of table view allows to deselect single choise
+        tableView.allowsMultipleSelection = true
+        
+        registerCell(in: tableView)
+        dataSource.tableView = tableView
+
+        return tableView
+    }()
+    
+    open override func loadView() {
+        super.loadView()
+        view = UIView(frame: CGRect.init(x: 0, y: 0, width: 320, height: 480))
+        
+        view.addSubview(tableView)
+        tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        tableView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        
+        let applyButton = initApplyButton()
+        view.addSubview(applyButton)
+        let buttonInset = 16.0 as CGFloat
+        applyButton.addTarget(self, action: #selector(done(_:)), for: .touchUpInside)
+        applyButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: buttonInset).isActive = true
+        applyButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -buttonInset).isActive = true
+        applyButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -buttonInset).isActive = true
+        
+        var insets = tableView.contentInset
+        insets.bottom += applyButton.frame.height + 2*buttonInset
+        tableView.contentInset = insets
+    }
+    
     open override func viewDidLoad() {
         super.viewDidLoad()
-        // Multiple selection allows to deselect single choise
-        // In this controller single selection is processed on didSelectAction
-        tableView.allowsMultipleSelection = true
-        registerCell()
-
-//        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(done(_:)))
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("CHOOSE_ALL", comment: ""), style: .plain, target: self, action: #selector(selectAllEntries(_:)))
 
         if container is FilterableDataSourceContainer {
             definesPresentationContext = true
@@ -92,7 +121,7 @@ open class SelectablesListViewController<T>: UITableViewController, UISearchResu
             navigationItem.hidesSearchBarWhenScrolling = false
         }
 
-        dataSource.tableView = tableView
+        updateNavigationItems()
     }
 
     open override func viewDidAppear(_ animated: Bool) {
@@ -107,22 +136,17 @@ open class SelectablesListViewController<T>: UITableViewController, UISearchResu
         applyButton.heightAnchor.constraint(equalToConstant: 44).isActive = true
         return applyButton
     }
+
+    // MARK: Navigation items
     
-    private var applyButton: UIButton?
+    private lazy var selectAllButttonItem = UIBarButtonItem(title: NSLocalizedString("SELECT_ALL", comment: ""), style: .plain, target: self, action: #selector(selectAllEntries(_:)))
     
-    open override func willMove(toParent parent: UIViewController?) {
-        if applyButton == nil {
-            applyButton = initApplyButton()
-        }
-        if parent != nil, let parentView = parent?.view, let applyButton = applyButton {
-            parentView.addSubview(applyButton)
-            applyButton.addTarget(self, action: #selector(done(_:)), for: .touchUpInside)
-            applyButton.translatesAutoresizingMaskIntoConstraints = false
-            applyButton.leadingAnchor.constraint(equalTo: parentView.leadingAnchor, constant: 16.0).isActive = true
-            applyButton.trailingAnchor.constraint(equalTo: parentView.trailingAnchor, constant: -16.0).isActive = true
-            applyButton.bottomAnchor.constraint(equalTo: parentView.bottomAnchor, constant: -16.0).isActive = true
-        } else if let applyButton = applyButton {
-            applyButton.removeFromSuperview()
+    private lazy var deselectAllButttonItem = UIBarButtonItem(title: NSLocalizedString("DESELECT_ALL", comment: ""), style: .plain, target: self, action: #selector(deselectAllEntries(_:)))
+
+    private func updateNavigationItems() {
+        if self.multiselection {
+            let isAllEntriesSelected = selectedEntries.count == container?.fetchedObjects?.count
+            self.navigationItem.rightBarButtonItem = isAllEntriesSelected ? deselectAllButttonItem : selectAllButttonItem
         }
     }
     
@@ -207,6 +231,8 @@ open class SelectablesListViewController<T>: UITableViewController, UISearchResu
                 }
             }
         }
+        
+        updateNavigationItems()
     }
     
     open func dataSource(_ dataSource: DataSourceProtocol, didDeselect object: T, at indexPath: IndexPath?) {
@@ -214,6 +240,7 @@ open class SelectablesListViewController<T>: UITableViewController, UISearchResu
             selectedEntries.remove(at: index)
             delegate?.listDidDeselect(self, object)
         }
+        updateNavigationItems()
     }
     
     public func isObjectSelected(_ object: T) -> Bool {
