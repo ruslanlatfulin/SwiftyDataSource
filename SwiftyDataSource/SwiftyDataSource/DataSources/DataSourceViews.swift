@@ -21,7 +21,7 @@ public class DataSourceCollectionCell<Type>: UICollectionViewCell {
 }
 
 public protocol DataSourcePositionHandler {
-    func configure(for position: UITableViewCell.Position)
+    func configure(for position: UITableViewCellPosition)
 }
 
 public protocol DataSourceExpandable {

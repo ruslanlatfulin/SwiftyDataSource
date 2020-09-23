@@ -39,17 +39,19 @@ public class ArrayDataSourceContainer<ResultType>: DataSourceContainer<ResultTyp
         return arraySections[indexPath.section][indexPath.row]
     }
 
-    open override func search(_ block:(IndexPath, ResultType) -> Bool) {
+    open override func search(_ block:(IndexPath, ResultType) -> Bool) -> IndexPath? {
         for (sectionIndex, section) in arraySections.enumerated() {
             for (rowIndex, object) in section.arrayObjects.enumerated() {
-                if block(IndexPath(row: rowIndex, section: sectionIndex), object) {
-                    return
+                let indexPath = IndexPath(row: rowIndex, section: sectionIndex)
+                if block(indexPath, object) {
+                    return indexPath
                 }
             }
         }
+        return nil
     }
 
-    open func enumerate(_ block:(IndexPath, ResultType) -> Void) {
+    open override func enumerate(_ block:(IndexPath, ResultType) -> Void) {
         for (sectionIndex, section) in arraySections.enumerated() {
             for (rowIndex, object) in section.arrayObjects.enumerated() {
                 block(IndexPath(row: rowIndex, section: sectionIndex), object)
@@ -73,7 +75,7 @@ public class ArrayDataSourceContainer<ResultType>: DataSourceContainer<ResultTyp
     }
 
     // MARK: Array controller public interface
-    
+
     public func insert(object: ResultType, at indexPath: IndexPath) throws {
         let arraySection = arraySections[safe: indexPath.section]
         guard indexPath.row <= arraySection?.arrayObjects.count ?? 0 else {
@@ -120,15 +122,6 @@ public class ArrayDataSourceContainer<ResultType>: DataSourceContainer<ResultTyp
         delegate?.container(self, didChange: object, at: indexPath, for: reloadAction ? .reload : .update, newIndexPath: indexPath)
     }
 
-    public func insert(sectionObjects: [ResultType], at sectionIndex: Int = 0, named name: String = "", indexTitle: String? = nil) throws {
-        guard sectionIndex <= self.arraySections.count else {
-            throw ArrayDataSourceContainerError.NonValidIndexPathInsertion
-        }
-        let section = Section(objects: sectionObjects, name: name, indexTitle: indexTitle)
-        self.arraySections.insert(section, at: sectionIndex)
-        delegate?.container(self, didChange: section, atSectionIndex: sectionIndex, for: .insert)
-    }
-
     public func replace(sectionObjects: [ResultType], at sectionIndex: Int, named name: String = "", indexTitle: String? = nil) throws {
         guard sectionIndex <= self.arraySections.count else {
             throw ArrayDataSourceContainerError.NonValidIndexPathInsertion
@@ -138,15 +131,34 @@ public class ArrayDataSourceContainer<ResultType>: DataSourceContainer<ResultTyp
         delegate?.container(self, didChange: section, atSectionIndex: sectionIndex, for: .update)
     }
 
-    public func add(sectionObjects: [ResultType], named name: String = "", indexTitle: String? = nil) {
+    // MARK: Method allows to add objects to new section. If newSectionIndex is nil, add to the end.
+    public func insert(sectionObjects: [ResultType], at newSectionIndex: Int? = nil, named name: String = "", indexTitle: String? = nil) throws {
+        if let sectionIndex = newSectionIndex, sectionIndex > self.arraySections.count {
+            throw ArrayDataSourceContainerError.NonValidIndexPathInsertion
+        }
+        let sectionIndex = newSectionIndex ?? self.arraySections.count
         let section = Section(objects: sectionObjects, name: name, indexTitle: indexTitle)
-        let sectionIndex = self.arraySections.count
         self.arraySections.insert(section, at: sectionIndex)
-        delegate?.containerWillChangeContent(self)
         delegate?.container(self, didChange: section, atSectionIndex: sectionIndex, for: .insert)
+    }
+
+    // MARK: Method allows to add objects to the end of concrete section or create new if it does not exist
+    public func insert(objects: [ResultType], toSectionAt sectionIndex: Int, named name: String = "", indexTitle: String? = nil) throws {
+        let arraySection = arraySections[safe: sectionIndex]
+        guard let section = arraySection else {
+            try insert(sectionObjects: objects, at: sectionIndex, named: name, indexTitle: indexTitle)
+            return
+        }
+        
+        delegate?.containerWillChangeContent(self)
+        objects.forEach { object in
+            let rowIndex = section.numberOfObjects
+            section.insert(object: object, at: rowIndex)
+            delegate?.container(self, didChange: object, at: nil, for: .insert, newIndexPath: IndexPath(row: rowIndex, section: sectionIndex))
+        }
         delegate?.containerDidChangeContent(self)
     }
-    
+   
     public func removeAll() {
         let backUpArraySections = arraySections
         arraySections.removeAll()

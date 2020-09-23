@@ -6,7 +6,7 @@
 //  Copyright © 2019 launchOptions. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 public extension UIFont {
     func withTraights(_ traights: UIFontDescriptor.SymbolicTraits) -> UIFont {

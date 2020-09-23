@@ -91,10 +91,13 @@ public class DataSourceContainer<ResultType>: DataSourceContainerProtocol {
         return nil
     }
 
-    open func search(_ block:(IndexPath, ResultType) -> Bool) {
-//        assertionFailure("Should be overriden in subclasses")
+    open func search(_ block:(IndexPath, ResultType) -> Bool) -> IndexPath? {
+        fatalError("Should be overriden in subclasses")
     }
 
+    open func enumerate(_ block:(IndexPath, ResultType) -> Void) {
+        fatalError("Should be overriden in subclasses")
+    }
 }
 
 // MARK: DataSourceContainerDelegate

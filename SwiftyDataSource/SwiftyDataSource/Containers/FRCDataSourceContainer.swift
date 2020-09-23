@@ -47,19 +47,33 @@ public class FRCDataSourceContainer<ResultType: NSFetchRequestResult>: DataSourc
         return fetchedResultController.object(at: indexPath)
     }
     
-    open override func search(_ block:(IndexPath, ResultType) -> Bool) {
-        guard let sections = sections else { return }
+    open override func search(_ block:(IndexPath, ResultType) -> Bool) -> IndexPath? {
+        guard let sections = sections else { return nil }
         for (sectionIndex, section) in sections.enumerated() {
             if let sectionObjects = section.objects as? [ResultType] {
                 for (rowIndex, object) in sectionObjects.enumerated() {
-                    if block(IndexPath(row: rowIndex, section: sectionIndex), object) {
-                        return
+                    let indexPath = IndexPath(row: rowIndex, section: sectionIndex)
+                    if block(indexPath, object) {
+                        return indexPath
                     }
                 }
             }
         }
+        return nil
     }
 
+    open override func enumerate(_ block: (IndexPath, ResultType) -> Void) {
+        guard let sections = sections else { return }
+        for (sectionIndex, section) in sections.enumerated() {
+            if let sectionObjects = section.objects as? [ResultType] {
+                for (rowIndex, object) in sectionObjects.enumerated() {
+                    let indexPath = IndexPath(row: rowIndex, section: sectionIndex)
+                    block(indexPath, object)
+                }
+            }
+        }
+    }
+    
     open override func indexPath(for object: ResultType) -> IndexPath? {
         return fetchedResultController.indexPath(forObject: object)
     }

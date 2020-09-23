@@ -102,7 +102,7 @@ open class TableViewDataSource<ObjectType>: NSObject, DataSource, UITableViewDat
         return cell
     }
 
-    // MARK: NoDataView processing
+    // MARK: NoDataView & RefreshingView processing
     
     public var noDataView: UIView? {
         didSet {
@@ -110,34 +110,66 @@ open class TableViewDataSource<ObjectType>: NSObject, DataSource, UITableViewDat
         }
     }
 
+    public var refreshingView: UIView? {
+        didSet {
+            showNoDataViewIfNeeded()
+        }
+    }
+
+    public private(set) var isRefreshing: Bool = false
+    
+    public func beginRefreshing() {
+        isRefreshing = true
+        showNoDataViewIfNeeded()
+    }
+
+    public func endRefreshing() {
+        tableView?.refreshControl?.endRefreshing()
+        isRefreshing = false
+        showNoDataViewIfNeeded()
+    }
+
     open func setNoDataView(hidden: Bool) {
-        guard let noDataView = noDataView, let tableView = tableView else {
+        if hidden {
+            setView(refreshingView, hidden: hidden)
+            setView(noDataView, hidden: hidden)
+        } else {
+            let refreshingOrNoData = isRefreshing ? refreshingView : noDataView
+            let anotherView = (refreshingOrNoData == refreshingView) ? noDataView : refreshingView
+            setView(anotherView, hidden: true)
+            setView(refreshingOrNoData, hidden: false)
+        }
+    }
+    
+    open func setView(_ viewToAdd: UIView?, hidden: Bool) {
+        guard let tableView = tableView, let viewToAdd = viewToAdd else { return }
+        
+        // Library allows to handle NoDataView and Refreshing view in two ways
+        // 1. Add viewToAdd in client code to any view and library makes its hidden and visibly automatically
+        if viewToAdd.superview != nil && viewToAdd.superview != tableView.backgroundView {
+            viewToAdd.isHidden = hidden
+            viewToAdd.superview?.bringSubviewToFront(viewToAdd)
             return
         }
         
-        if noDataView.superview != nil && noDataView.superview != tableView.backgroundView && noDataView != tableView.backgroundView {
-            noDataView.isHidden = hidden
-            noDataView.superview?.bringSubviewToFront(noDataView)
-        } else if noDataView.superview == nil && hidden == false {
-            noDataView.translatesAutoresizingMaskIntoConstraints = false
-            if tableView.backgroundView != nil {
-                tableView.backgroundView?.addSubview(noDataView)
-            } else {
-                tableView.backgroundView = noDataView
+        // 2. If viewToAdd is not added to another view it will be added to background view of table view
+        // Somewhy we need to create background view to add it. If set view as background view it will be twitched on refresh animation
+        if viewToAdd.superview == nil && hidden == false {
+            viewToAdd.translatesAutoresizingMaskIntoConstraints = false
+            tableView.backgroundView = UIView(frame: tableView.bounds)
+            tableView.backgroundView?.addSubview(viewToAdd)
+            
+            if let superview = viewToAdd.superview {
+                viewToAdd.leftAnchor.constraint(equalTo: superview.leftAnchor).isActive = true
+                viewToAdd.rightAnchor.constraint(equalTo: superview.rightAnchor).isActive = true
+                viewToAdd.topAnchor.constraint(equalTo: superview.topAnchor).isActive = true
+                viewToAdd.bottomAnchor.constraint(equalTo: superview.bottomAnchor).isActive = true
             }
-            if let superview = noDataView.superview {
-                noDataView.centerXAnchor.constraint(equalTo: superview.centerXAnchor).isActive = true
-                noDataView.centerYAnchor.constraint(equalTo: superview.centerYAnchor).isActive = true
-                noDataView.leftAnchor.constraint(equalTo: superview.leftAnchor).isActive = true
-                noDataView.rightAnchor.constraint(equalTo: superview.rightAnchor).isActive = true
-                noDataView.topAnchor.constraint(equalTo: superview.topAnchor).isActive = true
-                noDataView.bottomAnchor.constraint(equalTo: superview.bottomAnchor).isActive = true
-            }
-        } else if noDataView.superview != nil && hidden == true {
-            if noDataView == tableView.backgroundView {
+        } else if viewToAdd.superview != nil && hidden == true {
+            if viewToAdd == tableView.backgroundView {
                 tableView.backgroundView = nil
             } else {
-                noDataView.removeFromSuperview()
+                viewToAdd.removeFromSuperview()
             }
         }
     }
