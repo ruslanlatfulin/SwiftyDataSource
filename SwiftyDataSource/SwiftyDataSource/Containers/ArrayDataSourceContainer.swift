@@ -142,11 +142,11 @@ public class ArrayDataSourceContainer<ResultType>: DataSourceContainer<ResultTyp
         delegate?.container(self, didChange: section, atSectionIndex: sectionIndex, for: .insert)
     }
 
-    // MARK: Method allows to add objects to the end of concrete section
-    public func insert(objects: [ResultType], toSectionAt sectionIndex: Int) throws {
+    // MARK: Method allows to add objects to the end of concrete section or create new if it does not exist
+    public func insert(objects: [ResultType], toSectionAt sectionIndex: Int, named name: String = "", indexTitle: String? = nil) throws {
         let arraySection = arraySections[safe: sectionIndex]
         guard let section = arraySection else {
-            try insert(sectionObjects: objects, at: sectionIndex)
+            try insert(sectionObjects: objects, at: sectionIndex, named: name, indexTitle: indexTitle)
             return
         }
         
