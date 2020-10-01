@@ -6,6 +6,7 @@
 //  Copyright © 2018 launchOptions. All rights reserved.
 //
 
+#if os(iOS)
 import XCTest
 @testable import SwiftyDataSource
 
@@ -93,3 +94,4 @@ extension SwiftyDataSourceTests: DataSourceContainerDelegate {
         
     }
 }
+#endif

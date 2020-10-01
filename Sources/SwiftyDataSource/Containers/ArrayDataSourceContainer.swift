@@ -6,6 +6,7 @@
 //  Copyright © 2018 launchOptions. All rights reserved.
 //
 
+#if os(iOS)
 import UIKit
 
 enum ArrayDataSourceContainerError: Error {
@@ -243,3 +244,4 @@ public class ArrayDataSourceContainer<ResultType>: DataSourceContainer<ResultTyp
         }
     }
 }
+#endif

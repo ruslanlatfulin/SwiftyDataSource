@@ -6,6 +6,7 @@
 //  Copyright © 2020 EffectiveSoft. All rights reserved.
 //
 
+#if os(iOS)
 import Foundation
 
 public protocol IdentifiableProtocol {
@@ -19,3 +20,4 @@ extension DataSourceContainer where ResultType: IdentifiableProtocol {
         }
     }
 }
+#endif

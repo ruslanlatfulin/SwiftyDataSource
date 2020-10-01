@@ -6,6 +6,7 @@
 //  Copyright © 2020 EffectiveSoft. All rights reserved.
 //
 
+#if os(iOS)
 import UIKit
 
 public class LeftAlignmentFlowLayout: UICollectionViewFlowLayout {
@@ -46,3 +47,4 @@ public class LeftAlignmentFlowLayout: UICollectionViewFlowLayout {
         return layoutAttributes
     }
 }
+#endif

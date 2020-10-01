@@ -6,7 +6,7 @@
 //  Copyright © 2018 HRketing. All rights reserved.
 //
 
-import Foundation
+#if os(iOS)
 import UIKit
 
 extension DataSource {
@@ -36,3 +36,4 @@ extension DataSource {
     }
 
 }
+#endif

@@ -6,6 +6,7 @@
 //  Copyright © 2018 launchOptions. All rights reserved.
 //
 
+#if os(iOS)
 import UIKit
 
 public extension UIViewController {
@@ -20,3 +21,4 @@ public extension UIViewController {
         return self.children.filter { $0 is T }.last as? T
     }
 }
+#endif

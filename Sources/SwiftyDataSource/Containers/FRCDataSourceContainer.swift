@@ -6,6 +6,7 @@
 //  Copyright © 2018 launchOptions. All rights reserved.
 //
 
+#if os(iOS)
 import UIKit
 import CoreData
 
@@ -148,3 +149,4 @@ class CoreDataDelegateForwarder<ResultType: NSFetchRequestResult>: NSObject, NSF
     }
     
 }
+#endif

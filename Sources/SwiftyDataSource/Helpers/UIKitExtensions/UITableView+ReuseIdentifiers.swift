@@ -6,6 +6,7 @@
 //  Copyright © 2018 launchOptions. All rights reserved.
 //
 
+#if os(iOS)
 import UIKit
 
 public protocol IHaveDefaultReuseIdentifier {
@@ -58,4 +59,4 @@ public extension UITableView {
         register(UINib(nibName: T.defaultReuseIdentifier, bundle: nil), forCellReuseIdentifier: T.defaultReuseIdentifier)
     }
 }
-
+#endif

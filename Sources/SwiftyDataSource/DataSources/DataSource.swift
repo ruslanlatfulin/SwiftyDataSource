@@ -6,6 +6,7 @@
 //  Copyright © 2018 launchOptions. All rights reserved.
 //
 
+#if os(iOS)
 import UIKit
 
 public protocol DataSourceConfigurable {
@@ -59,3 +60,4 @@ extension DataSource {
     }
 
 }
+#endif

@@ -6,6 +6,7 @@
 //  Copyright © 2018 launchOptions. All rights reserved.
 //
 
+#if os(iOS)
 import UIKit
 
 public enum UITableViewCellPosition {
@@ -36,3 +37,4 @@ public extension TableViewDataSource {
     }
 
 }
+#endif

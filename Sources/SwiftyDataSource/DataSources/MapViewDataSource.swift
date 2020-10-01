@@ -6,6 +6,7 @@
 //  Copyright © 2018 launchOptions. All rights reserved.
 //
 
+#if os(iOS)
 import UIKit
 import MapKit
 
@@ -153,4 +154,6 @@ open class MapViewDataSource<ObjectType>: NSObject, DataSource, MKMapViewDelegat
         guard let annotation = view.annotation as? ObjectType else { return }
         delegate?.dataSource(self, didSelect: annotation)
     }
+    
 }
+#endif

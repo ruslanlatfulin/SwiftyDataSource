@@ -6,6 +6,7 @@
 //  Copyright © 2018 launchOptions. All rights reserved.
 //
 
+#if os(iOS)
 import UIKit
 
 open class UITableViewCellSubtitle: UITableViewCell {
@@ -18,3 +19,4 @@ open class UITableViewCellSubtitle: UITableViewCell {
     @IBOutlet
     open var iconImageView: UIImageView?
 }
+#endif

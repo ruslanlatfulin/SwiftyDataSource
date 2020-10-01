@@ -6,6 +6,7 @@
 //  Copyright © 2019 EffectiveSoft. All rights reserved.
 //
 
+#if os(iOS)
 import Foundation
 
 public class FilterableDataSourceContainer<T>: ArrayDataSourceContainer<T> where T: SelectableEntity {
@@ -37,3 +38,4 @@ public class FilterableDataSourceContainer<T>: ArrayDataSourceContainer<T> where
         }
     }
 }
+#endif

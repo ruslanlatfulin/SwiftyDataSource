@@ -6,6 +6,7 @@
 //  Copyright © 2019 launchOptions. All rights reserved.
 //
 
+#if os(iOS)
 import UIKit
 
 public extension UIFont {
@@ -14,3 +15,4 @@ public extension UIFont {
         return UIFont(descriptor: newFontDescriptor, size: pointSize)
     }
 }
+#endif

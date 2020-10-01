@@ -6,6 +6,7 @@
 //  Copyright © 2019 EffectiveSoft. All rights reserved.
 //
 
+#if os(iOS)
 import Foundation
 
 public protocol SelectablesListDelegate {
@@ -41,3 +42,4 @@ public class AnySelectablesListDelegate<T>: SelectablesListDelegate where T: Sel
         return _listDidDeselectEntity(list, entity)
     }
 }
+#endif

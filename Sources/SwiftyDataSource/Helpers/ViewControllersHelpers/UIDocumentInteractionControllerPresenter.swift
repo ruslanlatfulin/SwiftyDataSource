@@ -6,6 +6,7 @@
 //  Copyright © 2019 EffectiveSoft. All rights reserved.
 //
 
+#if os(iOS)
 import UIKit
 
 public class UIDocumentInteractionControllerPresenter: NSObject, UIDocumentInteractionControllerDelegate {
@@ -30,3 +31,4 @@ public class UIDocumentInteractionControllerPresenter: NSObject, UIDocumentInter
         return viewControllerForPreview
     }
 }
+#endif

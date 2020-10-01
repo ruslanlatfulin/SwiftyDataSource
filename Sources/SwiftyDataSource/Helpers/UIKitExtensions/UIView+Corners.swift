@@ -6,6 +6,7 @@
 //  Copyright © 2018 launchOptions. All rights reserved.
 //
 
+#if os(iOS)
 import UIKit
 
 public extension UIView {
@@ -31,3 +32,4 @@ public extension UIView {
         self.layer.mask = mask
     }
 }
+#endif

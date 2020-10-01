@@ -6,6 +6,7 @@
 //  Copyright © 2019 launchOptions. All rights reserved.
 //
 
+#if os(iOS)
 import UIKit
 
 public protocol CollectionViewDataSourceDelegate: class {
@@ -49,4 +50,4 @@ public class AnyCollectionViewDataSourceDelegate<T>: CollectionViewDataSourceDel
     }
 
 }
-
+#endif

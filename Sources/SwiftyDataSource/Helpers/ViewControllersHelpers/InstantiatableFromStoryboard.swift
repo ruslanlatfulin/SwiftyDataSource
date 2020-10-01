@@ -6,6 +6,7 @@
 //  Copyright © 2018 launchOptions. All rights reserved.
 //
 
+#if os(iOS)
 import UIKit
 
 public protocol InstantiatableFromStoryboard {
@@ -52,3 +53,4 @@ public extension UINib {
         return resultObject
     }
 }
+#endif

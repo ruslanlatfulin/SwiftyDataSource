@@ -6,6 +6,7 @@
 //  Copyright © 2018 launchOptions. All rights reserved.
 //
 
+#if os(iOS)
 import Foundation
 import CoreData
 
@@ -146,3 +147,4 @@ public extension DataSourceContainerDelegate {
                    sectionIndexTitleForSectionName sectionName: String) -> String? { return nil }
 
 }
+#endif

@@ -6,6 +6,7 @@
 //  Copyright © 2018 launchOptions. All rights reserved.
 //
 
+#if os(iOS)
 import UIKit
 
 open class TableViewDataSource<ObjectType>: NSObject, DataSource, UITableViewDataSource, UITableViewDelegate {
@@ -401,3 +402,4 @@ extension TableViewDataSource: DataSourceContainerDelegate {
     }
     
 }
+#endif

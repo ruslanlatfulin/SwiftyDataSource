@@ -6,6 +6,7 @@
 //  Copyright © 2018 launchOptions. All rights reserved.
 //
 
+#if os(iOS)
 import UIKit
 
 // MARK: DataSource for customizing default behaviour of dataSource
@@ -94,3 +95,4 @@ public class AnyTableViewDataSourceDelegate<T>: TableViewDataSourceDelegate {
     }
 
 }
+#endif

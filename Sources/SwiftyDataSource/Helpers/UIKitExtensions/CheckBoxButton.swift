@@ -6,6 +6,7 @@
 //  Copyright © 2018 launchOptions. All rights reserved.
 //
 
+#if os(iOS)
 import UIKit
 
 public class CheckBoxButton: UIButton {
@@ -30,3 +31,4 @@ public class CheckBoxButton: UIButton {
     }
     
 }
+#endif

@@ -6,6 +6,7 @@
 //  Copyright © 2018 launchOptions. All rights reserved.
 //
 
+#if os(iOS)
 import UIKit
 
 public extension UIStackView {
@@ -20,3 +21,4 @@ public extension UIStackView {
         addArrangedSubview(imageView)
     }
 }
+#endif

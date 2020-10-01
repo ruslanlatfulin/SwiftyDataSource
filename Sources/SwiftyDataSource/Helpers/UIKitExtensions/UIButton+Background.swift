@@ -6,8 +6,8 @@
 //  Copyright © 2018 launchOptions. All rights reserved.
 //
 
+#if os(iOS)
 import UIKit
-import Foundation
 
 public extension UIButton {
     
@@ -61,3 +61,4 @@ public extension UIButton {
         return image
     }
 }
+#endif

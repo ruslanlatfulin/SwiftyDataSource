@@ -6,6 +6,7 @@
 //  Copyright © 2018 launchOptions. All rights reserved.
 //
 
+#if os(iOS)
 import UIKit
 
 public class AnyDataSource<T>: DataSourceProtocol {
@@ -57,3 +58,4 @@ public class AnyDataSource<T>: DataSourceProtocol {
         
     }
 }
+#endif

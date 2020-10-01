@@ -6,6 +6,7 @@
 //  Copyright © 2016 launchOptions. All rights reserved.
 //
 
+#if os(iOS)
 import UIKit
 
 public extension UIResponder {
@@ -28,3 +29,4 @@ public extension UIResponder {
         return responder as? T
     }
 }
+#endif

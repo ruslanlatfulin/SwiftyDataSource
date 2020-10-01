@@ -6,6 +6,7 @@
 //  Copyright © 2018 launchOptions. All rights reserved.
 //
 
+#if os(iOS)
 import UIKit
 
 open class SelectablesListViewController<T>: UIViewController, UISearchResultsUpdating, UISearchBarDelegate, TableViewDataSourceDelegate where T: SelectableEntity {
@@ -300,3 +301,4 @@ open class SelectablesListCell: UITableViewCell, DataSourceConfigurable {
         }
     }
 }
+#endif

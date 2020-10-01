@@ -6,6 +6,7 @@
 //  Copyright © 2018 launchOptions. All rights reserved.
 //
 
+#if os(iOS)
 import UIKit
 
 open class CollectionViewDataSource<ObjectType>: NSObject, DataSource, UICollectionViewDataSource, UICollectionViewDelegate {
@@ -165,4 +166,4 @@ extension CollectionViewDataSource: DataSourceContainerDelegate {
     }
   
 }
-
+#endif

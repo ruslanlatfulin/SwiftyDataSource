@@ -6,6 +6,7 @@
 //  Copyright © 2018 launchOptions. All rights reserved.
 //
 
+#if os(iOS)
 import UIKit
 
 // MARK: DataSource for customizing default behaviour of dataSource
@@ -35,4 +36,4 @@ public class AnyMapViewDataSourceDelegate<T>: MapViewDataSourceDelegate {
         return _dataSourceDidSelectObject(dataSource, object)
     }
 }
- 
+#endif
