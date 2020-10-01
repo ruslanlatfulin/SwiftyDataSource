@@ -140,7 +140,8 @@
 				1D1F7FC72024872F006B87D8 /* SwiftyDataSourceTests.swift */,
 				1D1F7FC92024872F006B87D8 /* Info.plist */,
 			);
-			path = SwiftyDataSourceTests;
+			name = SwiftyDataSourceTests;
+			path = Tests/SwiftyDataSourceTests;
 			sourceTree = "<group>";
 		};
 		1D7B8F382004D1B100400613 = {
@@ -170,7 +171,8 @@
 				1D7B8F452004D1B100400613 /* SwiftyDataSource.h */,
 				1D7B8F462004D1B100400613 /* Info.plist */,
 			);
-			path = SwiftyDataSource;
+			name = SwiftyDataSource;
+			path = Sources/SwiftyDataSource;
 			sourceTree = "<group>";
 		};
 		B84F3C6B21CAFE1600489349 /* Containers */ = {
@@ -595,7 +597,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = SwiftyDataSource/Info.plist;
+				INFOPLIST_FILE = "$(SRCROOT)/Sources/SwiftyDataSource/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.effectivesoft.SwiftyDataSource;
@@ -616,7 +618,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = SwiftyDataSource/Info.plist;
+				INFOPLIST_FILE = "$(SRCROOT)/Sources/SwiftyDataSource/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.effectivesoft.SwiftyDataSource;
