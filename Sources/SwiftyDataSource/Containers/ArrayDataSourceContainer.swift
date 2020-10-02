@@ -140,7 +140,10 @@ public class ArrayDataSourceContainer<ResultType>: DataSourceContainer<ResultTyp
         let sectionIndex = newSectionIndex ?? self.arraySections.count
         let section = Section(objects: sectionObjects, name: name, indexTitle: indexTitle)
         self.arraySections.insert(section, at: sectionIndex)
+        
+        delegate?.containerWillChangeContent(self)
         delegate?.container(self, didChange: section, atSectionIndex: sectionIndex, for: .insert)
+        delegate?.containerDidChangeContent(self)
     }
 
     // MARK: Method allows to add objects to the end of concrete section or create new if it does not exist
